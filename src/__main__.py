@@ -1,4 +1,5 @@
 import pydle
+import sys
 
 class Canvas:
     def __init__(self, width, height):
