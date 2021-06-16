@@ -6,7 +6,7 @@ class Canvas:
         self.width = width
         self.height = height
         self.canvas = [
-            [4 for y in range(self.width)] for x in range(self.height)
+            [0 for y in range(self.width)] for x in range(self.height)
         ]
 
     def dims(self):
@@ -31,7 +31,7 @@ class Canvas:
 
 help_msg = """SIZE - Returns dimensions as SIZE <w> <h>.
 PX - Returns the canvas
-PX <x> <y> <c> - Sets the pixel at x,y to c, where c is an ANSI color code"""
+PX <x> <y> <c> - Sets the pixel at x,y to c, where c is an ANSI color code (0-15)"""
 
 # Simple echo bot.
 class ANSIFlut(pydle.Client):
@@ -43,7 +43,7 @@ class ANSIFlut(pydle.Client):
     async def on_message(self, target, source, message):
         # don't respond to our own messages, as this leads to a positive feedback loop
         if source != self.nickname:
-            cmd = message.split(' ')
+            cmd = message.upper().split(' ')
             if cmd[0] == 'PX':
                 if len(cmd) == 1:
                     # return the canvas
