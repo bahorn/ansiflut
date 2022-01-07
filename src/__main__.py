@@ -100,7 +100,7 @@ class ANSIFlut(pydle.Client):
                         help_msg
                     )
         except:
-            continue
+            pass
 
 if __name__ == "__main__":
     client = ANSIFlut('ansiflut', realname='ansiflut', username='ansiflut')
