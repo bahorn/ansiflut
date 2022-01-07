@@ -41,63 +41,66 @@ class ANSIFlut(pydle.Client):
         await self.join('#ansiflut')
 
     async def on_message(self, target, source, message):
-        # don't respond to our own messages, as this leads to a positive feedback loop
-        if source != self.nickname:
-            cmd = message.upper().split(' ')
-            if cmd[0] == 'PX':
-                if len(cmd) == 1:
-                    # return the canvas
-                    width, height = self.canvas.dims()
-                    for y in range(height):
-                        line = [
-                            bytes(
-                                [
-                                    0x03,
-                                ]
-                            ).decode('utf-8') +
-                            '{}\u2588'.format(self.canvas.get(x, y))
-                            for x in range(width)
-                        ]
-                        await self.message(
-                            target,
-                            ''.join(line)
-                        )
-                            
-                elif len(cmd) == 4:
-                    # set a pixel
-                    print(cmd)
-                    try:
-                        x = int(cmd[1])
-                        y = int(cmd[2])
-                        c = int(cmd[3])
-                        if not self.canvas.set(x, y, c):
+        try:
+            # don't respond to our own messages, as this leads to a positive feedback loop
+            if source != self.nickname:
+                cmd = message.upper().split(' ')
+                if cmd[0] == 'PX':
+                    if len(cmd) == 1:
+                        # return the canvas
+                        width, height = self.canvas.dims()
+                        for y in range(height):
+                            line = [
+                                bytes(
+                                    [
+                                        0x03,
+                                    ]
+                                ).decode('utf-8') +
+                                '{}\u2588'.format(self.canvas.get(x, y))
+                                for x in range(width)
+                            ]
+                            await self.message(
+                                target,
+                                ''.join(line)
+                            )
+                                
+                    elif len(cmd) == 4:
+                        # set a pixel
+                        print(cmd)
+                        try:
+                            x = int(cmd[1])
+                            y = int(cmd[2])
+                            c = int(cmd[3])
+                            if not self.canvas.set(x, y, c):
+                                await self.message(
+                                    target,
+                                    'invalid message, try HELP'
+                                )
+                        except:
+                            print('oof')
                             await self.message(
                                 target,
                                 'invalid message, try HELP'
                             )
-                    except:
-                        print('oof')
+
+                    else:
                         await self.message(
                             target,
                             'invalid message, try HELP'
                         )
-
-                else:
+                elif cmd[0] == "SIZE":
+                    width, height = self.canvas.dims()
                     await self.message(
                         target,
-                        'invalid message, try HELP'
+                        'SIZE {} {}'.format(width, height)
                     )
-            elif cmd[0] == "SIZE":
-                width, height = self.canvas.dims()
-                await self.message(
-                    target,
-                    'SIZE {} {}'.format(width, height)
-                )
-            elif cmd[0] == "HELP":
-                await self.message(
-                    target,
-                    help_msg
-                )
+                elif cmd[0] == "HELP":
+                    await self.message(
+                        target,
+                        help_msg
+                    )
+        except:
+            continue
 
 if __name__ == "__main__":
     client = ANSIFlut('ansiflut', realname='ansiflut', username='ansiflut')
